@@ -27,6 +27,7 @@ For iOS:
 		from
 		[變數名稱]	[語系1]	[語系2]	[語系3]
 		to
+		"Parameter","Eng","Cht","Chs","Jpn"
 		"[變數名稱]","[語系1]","[語系2]","[語系3]"
 	•	執行 androidToIOS_string.sh 產生 iOS plist檔
 
