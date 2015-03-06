@@ -71,6 +71,7 @@ def csvToXml(srcFile, desFile, lang):
         if idx==0:
             idx += 1
             continue
+        print row
         parameter, english, chineseT, chineseS, japanese = row
         child = SubElement(top, 'string')
         child.set('name',parameter)
