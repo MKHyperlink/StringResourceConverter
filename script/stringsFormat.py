@@ -66,13 +66,13 @@ def csvToXml(srcFile, desFile, lang):
     #comment = Comment('Generated for PyMOTW')
     #top.append(comment)
 
-    idx = 0
+    isCrossRow = True
     for row in srcFile:
-        if idx==0:
-            idx += 1
+        if isCrossRow:
+            isCrossRow = False
             continue
-        print row
-        parameter, english, chineseT, chineseS, japanese = row
+        parameter, english, chineseT, chineseS, japanese = readFixedColumn(row)
+
         child = SubElement(top, 'string')
         child.set('name',parameter)
         if lang.lower() == 'eng':
@@ -99,27 +99,31 @@ def readOriginalCsvData():
     content = []
     oriData = open(csvFilePath,'r+')
     oriDataReader = UnicodeReader(oriData)
-    flag = True
+    isCrossRow = True
     for row in oriDataReader:
-        if flag:
-            flag = False
+        if isCrossRow:
+            isCrossRow = False
             continue
-        if len(row) !=0:
-            print row
-            parameter = row[PARA_IDX]
-            english = row[ENG_IDX]
-            chineseT = row[CHT_IDX]
-            chineseS = row[CHS_IDX]
-            japanese = row[JPN_IDX]
-        else:
-            parameter = ''
-            english = ''
-            chineseT = ''
-            chineseS = ''
-            japanese = ''
+        parameter, english, chineseT, chineseS, japanese = readFixedColumn(row)
         content.append([parameter, english, chineseT, chineseS, japanese])
     oriData.close()
     return content
+
+def readFixedColumn(row):
+    print row
+    if len(row) !=0:
+        parameter = row[PARA_IDX]
+        english = row[ENG_IDX]
+        chineseT = row[CHT_IDX]
+        chineseS = row[CHS_IDX]
+        japanese = row[JPN_IDX]
+    else:
+        parameter = ''
+        english = ''
+        chineseT = ''
+        chineseS = ''
+        japanese = ''
+    return (parameter, english, chineseT, chineseS, japanese)
 
 def checkFolderExists(lang):
     global xmlFilePath
