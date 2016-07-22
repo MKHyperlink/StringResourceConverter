@@ -11,7 +11,8 @@ Convert to Android/iOS string table format from CSV file.
 
 ####For Android:  
 	•	執行start.bat/sh: 啟動UI
-![ScreenShot](/docs/screenshot/ScreenShot.png)
+![ScreenShot](/doc/screenshot/ScreenShot.png)
+
 	XML to CSV function:
 	•	按android預設語系資料夾名稱，連同strings.xml一起複製到「file」資料夾
 	•	按下「start」
