@@ -11,6 +11,7 @@ This tools is default executed by Jython. If you have Python in your platform, y
 
 ####For Android:  
 	•	Execute start.bat/sh: Launch the operation UI
+![ScreenShot](/doc/screenshot/ScreenShot.png)
 
 	XML to CSV function:
 	•	Copy the language folder with strings.xml in android project to "file" folder.
