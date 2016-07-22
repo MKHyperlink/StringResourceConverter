@@ -1,27 +1,27 @@
 # StringTableConverter
 Convert to Android/iOS string table format from CSV file.
 
-####Introduce:  
-此程式預設使用 jython 來執行，若平台己有安裝 python 可直接使用 python 執行。  
+####Introduce:
+This tools is default executed by Jython. If you have Python in your platform, you can execute it with Python directly.
 
-#####使用 python 直接執行會無 UI 使用需使用 Command line:  
+#####If you execute this tool with Python, you need use command line to operate it.
 	python stringsFormat.py -csvtoxml [eng|cht|chs|jpn]  
 	python stringsFormat.py -xmltocsv [eng|cht|chs|jpn]  
 
 
 ####For Android:  
-	•	執行start.bat/sh: 啟動UI
+	•	Execute start.bat/sh: Launch the operation UI
 
 	XML to CSV function:
-	•	按android預設語系資料夾名稱，連同strings.xml一起複製到「file」資料夾
-	•	按下「start」
-	•	結果會產生language.csv檔
+	•	Copy the language folder with strings.xml in android project to "file" folder
+	•	Press "start"
+	•	It'll createed language.csv file.
 
 	CSV to XML function:
-	•	依照language.csv檔格式把值填入，結果會在各語系資料夾中產生strings.xml
+	•	Create strings.xml for target language, according to string in language.csv
 
 ####For iOS:
-	•	無UI
+	•	There haven't UI to operate.
 	•	根據	language.csv 轉換成 iOS 字串表「inforPlist.strings.[語系]」
 
 	Steps:	
