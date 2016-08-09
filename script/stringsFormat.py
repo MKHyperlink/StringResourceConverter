@@ -178,7 +178,7 @@ if __name__ == "__main__":
    if len(sys.argv) != 3:
       print "Need more paramters: [-csvtoxml|-xmltocsv] [eng|cht|chs|jpn]"
    else:
-      start(sys.argv[1], sys.argv[0])
+      start(sys.argv[1], sys.argv[2])
 
 
 
