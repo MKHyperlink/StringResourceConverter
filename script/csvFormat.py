@@ -11,6 +11,7 @@
 #!/usr/bin/env python
 import re
 import urllib
+import stringsFormat
 
 def main():
     file=open('./file/language.csv',"rb+")
@@ -22,7 +23,18 @@ def main():
         strLine = re.sub(r'\t','","', strLine)
         list.append(strLine)
     file.seek(0)
-    file.write('"Parameter","Eng","Cht","Chs","Jpn"\n')
+    title = ''
+    keyIdx, supportedLangs = stringsFormat.supportedLanguages()
+    print supportedLangs
+    for idx, lang in enumerate(supportedLangs):
+        title.join('"%s"' %(lang))
+        print title
+        if idx != len(supportedLangs)-1:
+            title.join(',')
+        else:
+            title.join('\n')
+    print title
+    file.write(title)
     file.writelines(list)
     file.truncate()
     file.close()

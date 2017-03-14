@@ -19,46 +19,51 @@ from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 from xml.dom import minidom
 from unicodeCsv import UnicodeWriter, UnicodeReader
 
-PARA_IDX = 0
-ENG_IDX = 1
-CHT_IDX = 2
-CHS_IDX = 3
-JPN_IDX = 4
-
 csvFilePath = './file/language.csv'
-
-engFolder = './file/values'
-chtFolder = './file/values-zh-rTW'
-chsFolder = './file/values-zh-rCN'
-jpnFolder = './file/values-ja'
+xmlToCsvFilePath = './file/language_fromXML.csv'
+folderPath = './file/values'
 xmlFilePath = '/strings.xml'
+
+KEY_IDX = 0
+LANGUAGE_ARY = ['variable', 'eng', 'cht', 'chs', 'jpn']
+
+def supportedLanguagesDisplay():
+    langDisplayDic = {}
+    langDisplayDic['English'] = 'eng'
+    langDisplayDic['Chinese traditional'] = 'cht'
+    langDisplayDic['Chinese simple'] = 'chs'
+    langDisplayDic['Japanese'] = 'jpn'
+    return langDisplayDic
+
+def supportedLanguages():
+    return (KEY_IDX, LANGUAGE_ARY)
 
 def xmlToCsv(srcFile, desFile, lang, content):
     tree = ElementTree.parse(srcFile)
 
-    desFile.writerow(['Parameter', 'eng', 'cht', 'chs', 'jpn'])
+    desFile.writerow(LANGUAGE_ARY)
 
-    index = 0
+    contentDic = {}
+    for langAry in content:
+        key = langAry[KEY_IDX]
+        contentDic[key] = langAry
+
     #for node in tree.iter('string'): #new feature from python v2.7
     for node in tree.findall('string'):
         name = node.attrib.get('name')
         value = node.text
+        if not value:
+            value = ''
 
-        if len(content)>index:
-            langValue = content[index]
-        else:
-            langValue = ['','','','','']
-
-        if name:
-            if lang.lower() == 'eng':
-                desFile.writerow([name, value, langValue[CHT_IDX], langValue[CHS_IDX], langValue[JPN_IDX]])
-            elif lang.lower() == 'cht':
-                desFile.writerow([name, langValue[ENG_IDX], value, langValue[CHS_IDX], langValue[JPN_IDX]])
-            elif lang.lower() == 'chs':
-                desFile.writerow([name, langValue[ENG_IDX], langValue[CHT_IDX], value, langValue[JPN_IDX]])
-            elif lang.lower() == 'jpn':
-                desFile.writerow([name, langValue[ENG_IDX], langValue[CHT_IDX], langValue[CHS_IDX], value])
-            index+=1
+        langAry = contentDic[name]
+        if not langAry:
+            langAry = [''] * len(LANGUAGE_ARY)
+            langAry[KEY_IDX] = name
+        if len(langAry) < len(LANGUAGE_ARY):
+            diffAry = [''] * (len(LANGUAGE_ARY)-len(langAry))
+            langAry.extend(diffAry)
+        langAry[LANGUAGE_ARY.index(lang)] = value
+        desFile.writerow(langAry)
 
 def csvToXml(srcFile, desFile, lang):
     top = Element('resources')
@@ -66,23 +71,13 @@ def csvToXml(srcFile, desFile, lang):
     #comment = Comment('Generated for PyMOTW')
     #top.append(comment)
 
-    isCrossRow = True
-    for row in srcFile:
-        if isCrossRow:
-            isCrossRow = False
+    for idx, row in enumerate(srcFile):
+        if idx == KEY_IDX:
             continue
-        parameter, english, chineseT, chineseS, japanese = readFixedColumn(row)
 
         child = SubElement(top, 'string')
-        child.set('name',parameter)
-        if lang.lower() == 'eng':
-            child.text = english
-        elif lang.lower() == 'cht':
-            child.text = chineseT
-        elif lang.lower() == 'chs':
-            child.text = chineseS
-        elif lang.lower() == 'jpn':
-            child.text = japanese
+        child.set('name', row[KEY_IDX])
+        child.text = row[LANGUAGE_ARY.index(lang)]          
 
     # Return a pretty-printed XML string for the Element.
     rough_string = ElementTree.tostring(top, 'utf-8')
@@ -99,86 +94,62 @@ def readOriginalCsvData():
     content = []
     oriData = open(csvFilePath,'r+')
     oriDataReader = UnicodeReader(oriData)
-    isCrossRow = True
-    for row in oriDataReader:
-        if isCrossRow:
-            isCrossRow = False
+    for idx, row in enumerate(oriDataReader):
+        if idx == KEY_IDX:
             continue
-        parameter, english, chineseT, chineseS, japanese = readFixedColumn(row)
-        content.append([parameter, english, chineseT, chineseS, japanese])
+        print repr(row).decode("unicode-escape")
+        content.append(row)
     oriData.close()
     return content
 
-def readFixedColumn(row):
-    print row
-    if len(row) !=0:
-        parameter = row[PARA_IDX]
-        english = row[ENG_IDX]
-        chineseT = row[CHT_IDX]
-        chineseS = row[CHS_IDX]
-        japanese = row[JPN_IDX]
-    else:
-        parameter = ''
-        english = ''
-        chineseT = ''
-        chineseS = ''
-        japanese = ''
-    return (parameter, english, chineseT, chineseS, japanese)
+def getXmlFileFullPath(lang, xmlPath):
+    langFilePath = '%s-%s' %(folderPath, lang)
+    if not os.path.exists(langFilePath):
+        os.makedirs(langFilePath)
+    return langFilePath+xmlPath
 
-def checkFolderExists(lang):
-    global xmlFilePath
-    xmlFilePath = '/strings.xml'
-    if lang.lower() == 'eng':
-        if not os.path.exists(engFolder):
-            os.makedirs(engFolder)
-        xmlFilePath = engFolder+xmlFilePath
-    elif lang.lower() == 'cht':
-        if not os.path.exists(chtFolder):
-            os.makedirs(chtFolder)
-        xmlFilePath = chtFolder+xmlFilePath
-    elif lang.lower() == 'chs':
-        if not os.path.exists(chsFolder):
-            os.makedirs(chsFolder)
-        xmlFilePath = chsFolder+xmlFilePath
-    elif lang.lower() == 'jpn':
-        if not os.path.exists(jpnFolder):
-            os.makedirs(jpnFolder)
-        xmlFilePath = jpnFolder+xmlFilePath
-    else:
-        if not os.path.exists(engFolder):
-            os.makedirs(engFolder)
-        xmlFilePath = engFolder+xmlFilePath
+def start(function, lang, isCreateNewCSV=False):
+    '''
+    isCreateNewCSV:
+        True: Create new CSV file after convert XML file to CSV file.
+        False: Modify original CSV file.
+    '''
+    # print '%s, %s' %(function, lang)
+    # return
 
-def start(function, lang):
-    checkFolderExists(lang)
     if function.lower()=="-csvtoxml":
+        fullXmlFilePath = getXmlFileFullPath(lang, xmlFilePath)
         csvFile = open(csvFilePath,'r')
-        xmlFile = open(xmlFilePath,'w+')
+        xmlFile = open(fullXmlFilePath,'w+')
         #csvreader = csv.reader(csvFile)
         csvreader = UnicodeReader(csvFile)
         csvToXml(csvreader, xmlFile, lang)
         csvFile.close()
         xmlFile.close()
     elif function.lower()=="-xmltocsv":
-        xmlFile = open(xmlFilePath,'r')
+        fullXmlFilePath = getXmlFileFullPath(lang, xmlFilePath)
+        xmlFile = open(fullXmlFilePath,'r')
         if os.path.exists(csvFilePath):
             content = readOriginalCsvData()
-            csvFile = open(csvFilePath,'w+')
         else:
-            csvFile = open(csvFilePath,'w+')
             content = []
+        targetCsvFilePath = csvFilePath
+        if isCreateNewCSV:
+            targetCsvFilePath = xmlToCsvFilePath
+        csvFile = open(targetCsvFilePath,'w+')
 
         #csvwriter = csv.writer(csvFile)
         csvwriter = UnicodeWriter(csvFile, lineterminator='\n')
         xmlToCsv(xmlFile, csvwriter, lang, content)
         csvFile.close()
         xmlFile.close()
+    print '%s Done' %(lang)
 
 if __name__ == "__main__":
    if len(sys.argv) != 3:
       print "Need more paramters: [-csvtoxml|-xmltocsv] [eng|cht|chs|jpn]"
    else:
-      start(sys.argv[1], sys.argv[2])
+      start(sys.argv[1], sys.argv[2], False)
 
 
 

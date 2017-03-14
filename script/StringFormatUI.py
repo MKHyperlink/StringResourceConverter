@@ -11,11 +11,14 @@ from javax.swing import (JFrame, JLabel, JPanel, JRadioButton, JButton,
 from java.lang import Runnable, Thread, Runtime
 
 
-WIDTH=280
-HEIGHT=30
+WINDOW_WIDTH=300
+WINDOW_HEIGHT=400
 
-language = ['English', 'Chinese traditional', 'Chinese simple', 'Japanese', 'All']
-languageDic = {language[0]:'eng', language[1]:'cht', language[2]:'chs', language[3]:'jpn'}
+language = ['All']
+languageDic = stringsFormat.supportedLanguagesDisplay()
+for key in languageDic:
+	language.insert(0, key)
+
 function = ['xml to csv', 'csv to xml'] 
 functionDic = {function[0]:'-xmltocsv', function[1]:'-csvtoxml'}
 
@@ -23,9 +26,9 @@ functionDic = {function[0]:'-xmltocsv', function[1]:'-csvtoxml'}
 class RadioAction():
 	def __init__(self, type):
 		if(type == 'lang'):
-			self.selected = language[0]
+			self.selected = language[-1]
 		elif(type == 'func'):
-			self.selected = function[0]
+			self.selected = function[-1]
 	def select(self, event):
 		self.selected =  event.getActionCommand()
 	def getSelected(self):
@@ -40,7 +43,7 @@ class ButtonAction():
 		sys.exit()	
 	def start(self, event):
 		if(langRdoAct.getSelected().lower() == 'all'):
-			for lang in languageDic.keys():
+			for lang in languageDic:
 				stringsFormat.start(functionDic[funcRdoAct.getSelected()], languageDic[lang])
 		else:
 			stringsFormat.start(functionDic[funcRdoAct.getSelected()], languageDic[langRdoAct.getSelected()])
@@ -49,48 +52,38 @@ btnAct = ButtonAction()
 
 def langPanelInit(langPnl):
 	langPnl.setBorder(TitledBorder('Language:'))
-	engRdoBtn = JRadioButton(language[0], actionPerformed = langRdoAct.select)
-	chtRdoBtn = JRadioButton(language[1], actionPerformed = langRdoAct.select)
-	chsRdoBtn = JRadioButton(language[2], actionPerformed = langRdoAct.select)
-	jpnRdoBtn = JRadioButton(language[3], actionPerformed = langRdoAct.select)
-	allRdoBtn = JRadioButton(language[4], actionPerformed = langRdoAct.select)
-	engRdoBtn.setSelected(True)
 	langRdoBtnGrp = ButtonGroup()
-	langRdoBtnGrp.add(engRdoBtn)
-	langRdoBtnGrp.add(chtRdoBtn)
-	langRdoBtnGrp.add(chsRdoBtn)
-	langRdoBtnGrp.add(jpnRdoBtn)
-	langRdoBtnGrp.add(allRdoBtn)
-	langPnl.add(engRdoBtn, 'wrap')
-	langPnl.add(chtRdoBtn, 'wrap')
-	langPnl.add(chsRdoBtn, 'wrap')
-	langPnl.add(jpnRdoBtn, 'wrap')
-	langPnl.add(allRdoBtn, 'wrap')
-	
+
+	for idx, lang in enumerate(language):
+		rdoBtn = JRadioButton(lang, actionPerformed = langRdoAct.select)	
+		if idx == len(language)-1:
+			rdoBtn.setSelected(True)
+		langRdoBtnGrp.add(rdoBtn)
+		langPnl.add(rdoBtn, 'wrap')
 
 def funcPanelInit(funcPnl):
 	funcPnl.setBorder(TitledBorder('Function:'))
-	x2vRdoBtn = JRadioButton(function[0], actionPerformed = funcRdoAct.select)
-	c2xRdoBtn = JRadioButton(function[1], actionPerformed = funcRdoAct.select)
-	x2vRdoBtn.setSelected(True)
 	funcRdoBtnGrp = ButtonGroup()
-	funcRdoBtnGrp.add(x2vRdoBtn)
-	funcRdoBtnGrp.add(c2xRdoBtn)
-	funcPnl.add(x2vRdoBtn, 'wrap')
-	funcPnl.add(c2xRdoBtn, 'wrap')
+
+	for idx, func in enumerate(function):
+		rdoBtn = JRadioButton(func, actionPerformed = funcRdoAct.select)
+		if idx == len(function)-1:
+			rdoBtn.setSelected(True)
+		funcRdoBtnGrp.add(rdoBtn)
+		funcPnl.add(rdoBtn, 'wrap')
 
 def actionPanelInit(actionPnl):
 	startBtn = JButton('Start', actionPerformed = btnAct.start)
 	exitBtn = JButton('Exit', actionPerformed = btnAct.quit)
 	pnl = JPanel()
-	actionPnl.add(pnl, 'w %s'%(WIDTH/4))
+	actionPnl.add(pnl, 'w %s'%(WINDOW_WIDTH/4))
 	actionPnl.add(startBtn)
 	actionPnl.add(exitBtn, 'right')
 
 class ConfigEditor(Runnable):
 	def __init__(self):
 		self.mainFrame = JFrame('Main Form')
-		self.mainFrame.setSize(300, 400)
+		self.mainFrame.setSize(WINDOW_WIDTH, WINDOW_HEIGHT)
 		self.mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
 		
 		self.basePnl = JPanel(MigLayout())
@@ -102,9 +95,9 @@ class ConfigEditor(Runnable):
 		funcPanelInit(self.funcPnl)
 		actionPanelInit(self.actionPnl)
 		
-		self.basePnl.add(self.langPnl, 'wrap, w %s'%(WIDTH))
-		self.basePnl.add(self.funcPnl, 'wrap, w %s'%(WIDTH))
-		self.basePnl.add(self.actionPnl, 'wrap, w %s'%(WIDTH))
+		self.basePnl.add(self.langPnl, 'wrap, w %s'%(WINDOW_WIDTH))
+		self.basePnl.add(self.funcPnl, 'wrap, w %s'%(WINDOW_WIDTH))
+		self.basePnl.add(self.actionPnl, 'wrap, w %s'%(WINDOW_WIDTH))
 		
 		self.mainFrame.add(self.basePnl)
 		
