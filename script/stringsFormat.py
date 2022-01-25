@@ -17,7 +17,6 @@ import codecs
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element, SubElement, Comment, tostring
 from xml.dom import minidom
-from unicodeCsv import UnicodeWriter, UnicodeReader
 
 csvFilePath = './file/language.csv'
 xmlToCsvFilePath = './file/language_fromXML.csv'
@@ -93,11 +92,12 @@ def csvToXml(srcFile, desFile, lang):
 def readOriginalCsvData():
     content = []
     oriData = open(csvFilePath,'r+')
-    oriDataReader = UnicodeReader(oriData)
+    oriDataReader = csv.reader(oriData)
+
     for idx, row in enumerate(oriDataReader):
         if idx == KEY_IDX:
             continue
-        print repr(row).decode("unicode-escape")
+        print(repr(row))
         content.append(row)
     oriData.close()
     return content
@@ -121,8 +121,8 @@ def start(function, lang, isCreateNewCSV=False):
         fullXmlFilePath = getXmlFileFullPath(lang, xmlFilePath)
         csvFile = open(csvFilePath,'r')
         xmlFile = open(fullXmlFilePath,'w+')
-        #csvreader = csv.reader(csvFile)
-        csvreader = UnicodeReader(csvFile)
+        csvreader = csv.reader(csvFile)
+
         csvToXml(csvreader, xmlFile, lang)
         csvFile.close()
         xmlFile.close()
@@ -138,16 +138,16 @@ def start(function, lang, isCreateNewCSV=False):
             targetCsvFilePath = xmlToCsvFilePath
         csvFile = open(targetCsvFilePath,'w+')
 
-        #csvwriter = csv.writer(csvFile)
-        csvwriter = UnicodeWriter(csvFile, lineterminator='\n')
+        csvwriter = csv.writer(csvFile)
+
         xmlToCsv(xmlFile, csvwriter, lang, content)
         csvFile.close()
         xmlFile.close()
-    print '%s Done' %(lang)
+    print('%s Done' %(lang))
 
 if __name__ == "__main__":
    if len(sys.argv) != 3:
-      print "Need more paramters: [-csvtoxml|-xmltocsv] [eng|cht|chs|jpn]"
+      print("Need more paramters: [-csvtoxml|-xmltocsv] [eng|cht|chs|jpn]")
    else:
       start(sys.argv[1], sys.argv[2], False)
 

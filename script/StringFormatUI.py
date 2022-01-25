@@ -113,7 +113,7 @@ if ( __name__ == '__main__' ) or ( __name__ == 'main' ) :
 	raw_input()
 	sys.exit()
 else :
-	print 'Error - script must be executed, not imported.\n'
-	print 'Usage: jython %s.py\n' % __name__
-	print '   or: wsadmin -conntype none -f %s.py' % __name__
+	print('Error - script must be executed, not imported.\n')
+	print('Usage: jython %s.py\n' % __name__)
+	print('   or: wsadmin -conntype none -f %s.py' % __name__)
 

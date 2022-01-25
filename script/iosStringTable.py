@@ -1,5 +1,4 @@
 import stringsFormat
-from unicodeCsv import UnicodeWriter, UnicodeReader
 
 filePath = './file/infoPlist.strings'
 
@@ -7,7 +6,7 @@ def writeFile(desFile, lang, content, keyIdx):
     for row in content:        
         langIdx = langAry.index(lang)
         line = "\"%s\"=\"%s\";\n"%(row[keyIdx], row[langIdx])
-        desFile.write(line.encode('utf8'))
+        desFile.write(line)
 
 def createLanguageFile(lang, content, keyIdx):
     langFilePath = '%s.%s' %(filePath, lang)
