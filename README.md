@@ -1,5 +1,5 @@
 # StringResourceConverter
-Generating Android/iOS string resource from CSV file.
+Generating Android/iOS string resource from CSV file.(Support Python 3 in branch python3.0)
 
 When do you need it: You can create a Google Drive file for translation and export it as CSV file to local (You can use my another project GoogleDriveAccess to do it automatically). And then you can use this tool to generate Android or iOS string resources.
 
